@@ -13,7 +13,7 @@ const TshirtCategories = () => {
 
     useEffect(() => {
         dataFromCategory();
-    }, [1])
+    }, [1]);
     const dataFromCategory = async () => {
         const response = await fetch(`${config.apiBaseUrl}/category`, {
             method: "GET",

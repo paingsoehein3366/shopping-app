@@ -4,7 +4,7 @@ import LayoutApp from "./LayoutApp";
 import AddIcon from "@mui/icons-material/Add";
 import CreateShirt from "./CreateShirt";
 import { config } from "../config/config";
-import CreatePhoto from "./CreatePhoto";
+import FileUpload from "./FileUpload";
 
 const ShirtApp = () => {
     const [open, setOpen] = useState(false);
@@ -69,7 +69,7 @@ const ShirtApp = () => {
                     </Box>
                 </Box>
             </Box>
-            <CreatePhoto open={open} setOpen={() => setOpen(false)} />
+            <FileUpload open={open} setOpen={() => setOpen(false)} />
             <CreateShirt open={createShirtOpen} setOpen={() => setCreateShirtOpen(false)} id={id.id} />
         </Box>
     )
