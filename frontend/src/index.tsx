@@ -8,6 +8,7 @@ import LoginApp from './components/loginApp';
 import ShirtApp from './components/ShirtApp';
 import ShirtCategories from './components/ShirtCategories';
 import UpdateCategory from './components/UpdateCategory';
+import ChangeCategory from './frontendComponents/changCategory';
 
 const router = createBrowserRouter([
   {
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
   {
     path: "/updateCategory/:id",
     element: <UpdateCategory />
+  },
+  {
+    path: "/changeCategories/:id",
+    element: <ChangeCategory />
   }
 ])
 

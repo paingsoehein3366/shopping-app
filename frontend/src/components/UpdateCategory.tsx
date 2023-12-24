@@ -2,13 +2,18 @@ import { Box, Button, Card, CardActionArea, CardContent, CardMedia, TextField, T
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { config } from "../config/config";
+import Delete from "./Delete";
 import LayoutApp from "./LayoutApp";
+import Update from "./Update";
 
 const UpdateCategory = () => {
     const param = useParams().id;
     const [dataCategory, setDataCategory] = useState([{ id: 0, name: "" }]);
     const [dataShirt, setDataShirt] = useState([{ id: 0, title: "", price: 0, url: "" }]);
     const [dataShirtAndCategory, setDataShirtAndCategory] = useState([{ shirt_categories_id: 0, shirts_id: 0 }]);
+    const [deleteOpen, setDeleteOpen] = useState(false);
+    const [deleteId, setDeleteId] = useState({ id: 0 });
+    const [updateName, setUpdateName] = useState({ name: "" });
 
     const checkCategoryId = dataCategory.filter(item => item.id === Number(param));
     const checkShirtId = dataShirtAndCategory.filter(item => item.shirt_categories_id === Number(param)).map(item => item.shirts_id);
@@ -59,21 +64,44 @@ const UpdateCategory = () => {
             return alert("Error!");
         }
     };
+    //delete Function
+    const deleteFunction = async () => {
+        await fetch(`${config.apiBaseUrl}/delete`, {
+            method: "DELETE",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ Id: deleteId.id })
+        })
+        setDeleteOpen(false);
+    };
 
     return (
         <Box>
             <LayoutApp title="EdtiCategory" />
             <Box>
-                <Box sx={{ display: "flex", justifyContent: "end", p: 1 }}>
-                    <Button variant="contained" color="error">Delete</Button>
-                </Box>
-                <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mt: 3 }}>
                     <Box>
                         {checkCategoryId.map(item => {
                             return (
-                                <Box sx={{ display: "flex", }}>
-                                    <TextField value={item.name} sx={{ mr: 1 }} />
-                                    <Button variant="contained">update</Button>
+                                <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }} key={item.id}>
+                                    <Typography variant="h6" sx={{ color: "#ffffff", bgcolor: "gray", p: 1, borderRadius: 2 }}>{item.name}</Typography>
+                                    <Box sx={{ display: "flex", mt: 2 }}>
+                                        <TextField
+                                            placeholder="Category Name..."
+                                            label="Category Name..."
+                                            value={updateName.name}
+                                            sx={{ mr: 1 }}
+                                            onChange={(evt) => setUpdateName({ ...updateName, name: evt.target.value })}
+                                        />
+                                        <Button onClick={async () => {
+                                            if (!updateName.name) return alert("Please enter category name.")
+                                            await fetch(`${config.apiBaseUrl}/update`, {
+                                                method: "PUT",
+                                                headers: { "content-type": "application/json" },
+                                                body: JSON.stringify({ id: item.id, name: updateName.name })
+                                            });
+                                            setUpdateName({ name: "" });
+                                        }} variant="contained">update</Button>
+                                    </Box>
                                 </Box>
                             )
                         })}
@@ -81,7 +109,7 @@ const UpdateCategory = () => {
                     <Box sx={{ display: "flex", width: "100%", flexWrap: "wrap", justifyContent: "center" }}>
                         {checkShirts.map(item => {
                             return (
-                                <Box>
+                                <Box key={item.id}>
                                     <Card sx={{ width: { xs: 150, md: 240 }, m: 2 }}>
                                         <CardActionArea>
                                             <CardMedia
@@ -96,9 +124,8 @@ const UpdateCategory = () => {
                                             </CardContent>
                                         </CardActionArea>
                                     </Card>
-                                    <Box sx={{ display: "flex", justifyContent: "space-around" }}>
-                                        <Button variant="contained">update</Button>
-                                        <Button variant="contained" color="error">remove</Button>
+                                    <Box sx={{ display: "flex", justifyContent: "center" }}>
+                                        <Button onClick={() => { setDeleteOpen(true); setDeleteId({ ...deleteId, id: item.id }) }} variant="contained" color="error">remove</Button>
                                     </Box>
                                 </Box>
                             )
@@ -106,6 +133,13 @@ const UpdateCategory = () => {
                     </Box>
                 </Box>
             </Box>
+            <Delete
+                open={deleteOpen}
+                setOpen={() => setDeleteOpen(false)}
+                title="Are you sure? You want to delete this? "
+                cb={deleteFunction}
+                conform="remove"
+            />
         </Box>
     )
 };

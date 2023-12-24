@@ -1,15 +1,11 @@
-import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 import LayoutApp from './components/LayoutApp';
-import Exaple from './components/exaple';
+import OrderApp from './frontendComponents/orderApp';
 
 function App() {
   return (
     <div className="App">
-      <LayoutApp title="Home" />
-      <h1>Hello Word</h1>
-      <Exaple />
+      <OrderApp />
     </div>
   );
 }

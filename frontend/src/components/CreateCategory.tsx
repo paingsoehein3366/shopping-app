@@ -19,7 +19,7 @@ const CreateCategory = ({ open, setOpen }: Prop) => {
             setOpen();
         } else {
             setOpen();
-            return alert("Error...");
+            alert("Error...");
         }
     };
     return (
