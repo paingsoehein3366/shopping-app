@@ -2,6 +2,7 @@ import { Box, Button, Card, CardActionArea, CardContent, CardMedia, TextField, T
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { config } from "../config/config";
+import AddShirt from "./addShirt";
 import Delete from "./Delete";
 import LayoutApp from "./LayoutApp";
 import Update from "./Update";
@@ -12,6 +13,7 @@ const UpdateCategory = () => {
     const [dataShirt, setDataShirt] = useState([{ id: 0, title: "", price: 0, url: "" }]);
     const [dataShirtAndCategory, setDataShirtAndCategory] = useState([{ shirt_categories_id: 0, shirts_id: 0 }]);
     const [deleteOpen, setDeleteOpen] = useState(false);
+    const [addShirtOpen, setAddShirtOpen] = useState(false);
     const [deleteId, setDeleteId] = useState({ id: 0 });
     const [updateName, setUpdateName] = useState({ name: "" });
 
@@ -79,6 +81,7 @@ const UpdateCategory = () => {
             <LayoutApp title="EdtiCategory" />
             <Box>
                 <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mt: 3 }}>
+                    {/* shirt category */}
                     <Box>
                         {checkCategoryId.map(item => {
                             return (
@@ -106,30 +109,37 @@ const UpdateCategory = () => {
                             )
                         })}
                     </Box>
-                    <Box sx={{ display: "flex", width: "100%", flexWrap: "wrap", justifyContent: "center" }}>
-                        {checkShirts.map(item => {
-                            return (
-                                <Box key={item.id}>
-                                    <Card sx={{ width: { xs: 150, md: 240 }, m: 2 }}>
-                                        <CardActionArea>
-                                            <CardMedia
-                                                component="img"
-                                                height="240"
-                                                image={`${config.apiBaseUrl}/images/${item.url}`}
-                                                alt="green iguana"
-                                            />
-                                            <CardContent>
-                                                <Typography gutterBottom variant="h6" component="div">{item.title}</Typography>
-                                                <Typography variant="body2" color="text.secondary">{item.price} Kyats</Typography>
-                                            </CardContent>
-                                        </CardActionArea>
-                                    </Card>
-                                    <Box sx={{ display: "flex", justifyContent: "center" }}>
-                                        <Button onClick={() => { setDeleteOpen(true); setDeleteId({ ...deleteId, id: item.id }) }} variant="contained" color="error">remove</Button>
+                    {/* shirt */}
+                    <Box>
+                        <Box sx={{ display: "flex", justifyContent: "center", marginY: 3 }}>
+                            <Button onClick={() => setAddShirtOpen(true)} variant="contained" color="success">&#65291; add shirt</Button>
+                        </Box>
+                        <Box sx={{ display: "flex", width: "100%", flexWrap: "wrap", justifyContent: "center" }}>
+                            {checkShirts.map(item => {
+                                return (
+                                    <Box key={item.id}>
+                                        <Card sx={{ width: { xs: 150, md: 240 }, m: 2 }}>
+                                            <CardActionArea>
+                                                <CardMedia
+                                                    component="img"
+                                                    height="240"
+                                                    image={`${config.apiBaseUrl}/images/${item.url}`}
+                                                    alt="green iguana"
+                                                />
+                                                <CardContent>
+                                                    <Typography gutterBottom variant="h6" component="div">{item.title}</Typography>
+                                                    <Typography variant="body2" color="text.secondary">{item.price} Kyats</Typography>
+                                                </CardContent>
+                                            </CardActionArea>
+                                        </Card>
+                                        <Box sx={{ display: "flex", justifyContent: "space-around" }}>
+                                            <Button onClick={() => { }} variant="contained">update</Button>
+                                            <Button onClick={() => { setDeleteOpen(true); setDeleteId({ ...deleteId, id: item.id }) }} variant="contained" color="error">remove</Button>
+                                        </Box>
                                     </Box>
-                                </Box>
-                            )
-                        })}
+                                )
+                            })}
+                        </Box>
                     </Box>
                 </Box>
             </Box>
@@ -140,6 +150,7 @@ const UpdateCategory = () => {
                 cb={deleteFunction}
                 conform="remove"
             />
+            <AddShirt open={addShirtOpen} setOpen={() => setAddShirtOpen(false)} />
         </Box>
     )
 };
