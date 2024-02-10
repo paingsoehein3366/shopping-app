@@ -1,8 +1,12 @@
+import dotenv from "dotenv";
+dotenv.config();
+import jwt from "jsonwebtoken";
 import express, { json } from "express";
 import cors from "cors";
 import multer from "multer";
 import path from "path";
 import { db } from "./db/db";
+import { config } from "./config/config";
 const app = express();
 
 app.use(cors());
@@ -124,6 +128,99 @@ app.post("/frondendShowCategory", async (req, res) => {
     if (!checkShirtId.length) return res.send(402);
     res.send(checkShirtId);
 });
+// userOrder
+app.post("/userOrder", async (req, res) => {
+    const { id, title, price } = req.body;//user_id need
+    console.log("ID: ", id, ", Title: ", title, ", Price: ", price);
+    const color = "blue";
+    const categories = "shirts";
+    const isVaild = id && title && price;
+    if (!isVaild) return res.send(400);
+    try {
+        await db.query("insert into orders (name,categories,color,price,user_id) values($1,$2,$3,$4,$5)",
+            [String(title), categories, color, Number(price), Number(id)]
+        );
+    } catch {
+        console.log("Error!");
+        return res.send(401);
+    }
+    res.send(200);
+});
+//register
+app.post("/register", async (req, res) => {
+    const { name, email, password, address } = req.body;
+    const isVaild = name && email && password && address;
+    if (!isVaild) return res.send(400);
+    console.log("users: ", name, email, password, address);
+    try {
+        const userDataFromDb = await db.query("insert into users (name,email,password,address) values($1,$2,$3,$4) returning *",
+            [name, email, password, address]
+        );
+        const user = userDataFromDb.rows[0];
+        const userId = userDataFromDb.rows.map(item => item.id);
+        console.log("userId: ", userId);
+
+        if (!userId) return res.send(402);
+        await db.query("insert into orders (name,price,categories,color,user_id) values($1,$2,$3,$4,$5)",
+            ["default", 0, "default", "default", Number(userId)]
+        );
+        console.log("Ok!!!");
+        const accessToken = jwt.sign(user, config.jwtSecret as string);
+        await db.query(`update users set access_token = $1 where id=${userId}`, [accessToken]);
+        console.log("accessToken: ", accessToken);
+        res.send({ accessToken });
+    } catch (err) {
+        console.log("Error!", err);
+        res.sendStatus(500);
+    }
+});
+//login
+app.post("/login", async (req, res) => {
+    const { email, password } = req.body;
+    const isVaild = email && password;
+    if (!isVaild) return res.send(400);
+    const userDataFromDb = await db.query("select * from users");
+    const checkEmail = userDataFromDb.rows.filter(item => item.email === email);
+    if (!checkEmail.length) return res.send(401);
+    const checPassword = checkEmail.filter(item => item.password === password);
+    if (!checPassword.length) return res.send(402);
+    const accessToken = checkEmail.map(item => item.access_token);
+    console.log("accessToke: ", accessToken);
+    res.send({ accessToken });
+});
+//checkUser
+app.post("/checkUser", async (req, res) => {
+    try {
+        const { accessToken } = req.body;
+        if (!accessToken) return res.send(400);
+        const dataFromUserAccessToken = await db.query("select * from users");
+        const dataFromUserAccessTokenRow = dataFromUserAccessToken.rows;
+        const checkAccessTokenId = dataFromUserAccessTokenRow.filter(item => item.access_token === accessToken).map(item => item.id);
+        res.send(checkAccessTokenId);
+    } catch (error) {
+        console.log("Error!");
+        res.send(500);
+    }
+
+});
+app.post("/orderList", async (req, res) => {
+    const { accessToken } = req.body;
+    if (!accessToken) return res.send(400);
+    try {
+        const dataFromUserAccessToken = await db.query("select * from users");
+        const dataFromUserAccessTokenRow = dataFromUserAccessToken.rows;
+        const checkAccessTokenId = dataFromUserAccessTokenRow.filter(item => item.access_token === accessToken).map(item => item.id);
+
+        const dataFromOrderList = await db.query("select * from orders");
+        const checkOrder = dataFromOrderList.rows.filter(item => item.user_id === Number(checkAccessTokenId));
+        res.send(checkOrder);
+
+    } catch (error) {
+        console.log("Error!");
+        res.send(500);
+    }
+
+})
 // server run
 app.get("/", async (req, res) => {
     res.send("get starting.....");

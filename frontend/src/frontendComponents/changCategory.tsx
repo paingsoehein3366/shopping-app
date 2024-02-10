@@ -5,6 +5,7 @@ import { config } from "../config/config";
 import CategoriesApp from "./categoriesApp";
 import LayoutApp from "./layoutApp";
 import HomeIcon from '@mui/icons-material/Home';
+import BuyApp from "./buyApp";
 
 
 const ChangeCategory = () => {
@@ -13,6 +14,8 @@ const ChangeCategory = () => {
       const [data, setData] = useState([{ id: "", name: "" }]);
       const [dataShirtAndCategory, setDataShirtAndCategory] = useState([{ shirt_categories_id: 0, shirts_id: 0 }]);
       const [shirtData, setShirtData] = useState([{ id: 0, title: "", price: 0, url: "" }]);
+      const [open, setOpen] = useState(false);
+      const [id, setId] = useState(Number || undefined);
 
       useEffect(() => {
             dataFromCategory();
@@ -71,7 +74,7 @@ const ChangeCategory = () => {
                         {checkShirts.map(item => {
                               return (
                                     <Box key={item.id} sx={{ display: "flex", flexDirection: "column", m: 2 }}>
-                                          <Card sx={{ width: { xs: 150, md: 240 }, }}>
+                                          <Card onClick={() => { setOpen(true); setId(item.id) }} sx={{ width: { xs: 150, md: 240 }, }}>
                                                 <CardActionArea>
                                                       <CardMedia
                                                             component="img"
@@ -89,6 +92,7 @@ const ChangeCategory = () => {
                               )
                         })}
                   </Box>
+                  <BuyApp open={open} setOpen={() => setOpen(false)} id={id} />
             </Box>
       )
 };
