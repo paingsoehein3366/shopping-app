@@ -1,5 +1,6 @@
 import { Box, Dialog, DialogContent, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { config } from "../config/config";
 
 interface Prop {
@@ -44,6 +45,15 @@ const OrderListApp = ({ open, setOpen }: Prop) => {
                         <Box sx={{ display: "flex", justifyContent: "space-between", }}>
                               <Typography >Total</Typography>
                               <Typography >MMK</Typography>
+                        </Box>
+                        <Box sx={{ minWidth: 200, height: "1px", bgcolor: "gray", marginY: 2 }}></Box>
+                        {/* pay money */}
+                        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                              <Typography sx={{ mb: 3, color: "#fea816" }}>Pay Money</Typography>
+                              <Box sx={{ display: "flex" }}>
+                                    <Link style={{ padding: 10, background: "#4285f4", color: "#fff", borderRadius: 10, textDecoration: "none" }} to="/">Kpay</Link>
+                                    <Link style={{ padding: 10, color: "blue", borderRadius: 10, textDecoration: "none", border: "1px solid", marginLeft: 10, fontFamily: "initial" }} to="/">Vasa</Link>
+                              </Box>
                         </Box>
                   </DialogContent>
             </Dialog>
